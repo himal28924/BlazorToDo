@@ -10,7 +10,7 @@ public class Todo
     public Todo(int ownerId, string title)
     {
         OwnerId = ownerId;
-        title = Title;
+        Title = title;
         IsCompleted = false;
     }
     

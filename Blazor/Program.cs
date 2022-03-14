@@ -12,7 +12,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
 //THis part will get the TODOFILEDAO , if in future we need different File , we just need to change this
-builder.Services.AddScoped<ITodoHome, TodoFileDAO>();
+//builder.Services.AddScoped<ITodoHome, TodoFileDAO>();
 
 var app = builder.Build();
 
