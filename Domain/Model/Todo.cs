@@ -1,4 +1,4 @@
-namespace Domain.Model;
+namespace Domainn.Model;
 
 public class Todo
 {

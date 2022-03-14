@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Domain.Model;
+using Domainn.Model;
 
 namespace FileData.DataAccess;
 
@@ -30,7 +30,7 @@ public class FileContext
         SaveChanges();
     }
 
-    private void SaveChanges()
+    public void SaveChanges()
     {
         string serialize = JsonSerializer.Serialize(Todos);
         File.WriteAllText(todoFilePath,serialize);
