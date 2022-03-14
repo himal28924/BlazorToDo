@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Blazor.Data;
+
 using Domain.Contracts;
 using FileData.DataAccess;
 
@@ -9,10 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+
 
 //THis part will get the TODOFILEDAO , if in future we need different File , we just need to change this
-//builder.Services.AddScoped<ITodoHome, TodoFileDAO>();
+builder.Services.AddScoped<FileContext>();
+builder.Services.AddScoped<ITodoHome, TodoFileDAO>();
+
 
 var app = builder.Build();
 
