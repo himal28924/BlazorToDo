@@ -1,5 +1,5 @@
 using Domain.Contracts;
-using Domainn.Model;
+using Domain.Model;
 
 namespace FileData.DataAccess;
 

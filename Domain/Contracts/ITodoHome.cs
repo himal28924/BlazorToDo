@@ -1,4 +1,5 @@
-using Domainn.Model;
+using Domain.Model;
+
 
 namespace Domain.Contracts;
 
@@ -9,5 +10,4 @@ public interface ITodoHome
     public Task<Todo> AddAsync(Todo todo);
     public Task DeleteAsync(int id);
     public Task UpdateAsync(Todo todo);
-    
 }
