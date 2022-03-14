@@ -1,0 +1,26 @@
+@page "/AddTodo"
+@using Domain.Model
+@using Domain.Contracts
+@inject ITodoHome TodoHome
+@inject NavigationManager NavMgr
+<h3>AddTodo</h3>
+
+@code {
+    private Todo newTodo = new Todo();
+    private string errorLabel;
+
+    private async Task AddNewTodo()
+    {
+        errorLabel = "";
+        try
+        {
+            await TodoHome.AddAsync(newTodo);
+        }
+        catch(Exception e)
+        {
+            errorLabel = e.Message;
+            return;
+        }
+        NavMgr.NavigateTo("/Todos");
+    }
+}
