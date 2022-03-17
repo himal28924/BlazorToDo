@@ -5,7 +5,45 @@
 <h3>Todos</h3>
 
 <div class="filterbar">
-    
+    <div class="filterscontainer">
+        
+        @*I have to understand this *@
+        
+        <img src="img/@(doShowFilters ? "clear_" : "")funnel.png"
+             class="funnel"
+             @onclick="OpenCloseFilters"/>
+
+        @if (doShowFilters)
+        {
+            <div class="filter">
+                <div>
+                    <label> Owner Id</label>
+                </div>
+            
+                <div>
+                    <input type="number"
+                           class="owneridfield"
+                           @oninput="args => UpdateOwnerFilter(args) "
+                           min="0"/>
+                </div>
+            </div>
+            
+            <div class="filter">
+                <div>
+                    <label style="text-align:center">Is Completed? </label>
+                </div>
+                <div>
+                    <select class="completestatusfield"
+                            @onchange="args => UpdateCompletedStatusFilter(args)">
+                        <option value="all">all</option>
+                        <option value="true">true</option>
+                        <option value="false">false</option>
+                    </select>
+                </div>
+            </div>
+            
+        }
+    </div>
 
 </div>
 
