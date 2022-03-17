@@ -4,11 +4,16 @@
 @inject ITodoHome TodoHome;
 <h3>Todos</h3>
 
-@if (todos == null)
+<div class="filterbar">
+    
+
+</div>
+
+@if (allTodos == null)
 {
     <p> <em> Loading...</em></p>
 }
-else if (!todos.Any())
+else if (!allTodos.Any())
 {
     <p><em>
         No Item , please add some todo.
@@ -27,7 +32,7 @@ else
         </tr>
         </thead>
         <tbody>
-        @foreach (var item in todos)
+        @foreach (var item in allTodos)
         {
             <tr>
                 <td>@item.OwnerId</td>
@@ -58,18 +63,29 @@ else
     <label style="color: red">@errorLabel</label>
 }
 @code {
-    private ICollection<Todo> todos;
+    private ICollection<Todo> allTodos, todosToShow;
     private string errorLabel;
 
+    
+    /*
+     * For MAKINng and Filter Todo
+     */
+
+
+    private int? ownerIdFilter;
+    private bool? isComepletedFilter;
+    private bool doShowFilters;
     
     /*
      * First thing is to Intialize everything get from JSON FIle
      */
     protected override async Task OnInitializedAsync()
     {
-        todos = await TodoHome.GetAsync();
+        allTodos = await TodoHome.GetAsync();
+        todosToShow = allTodos;
     }
 
+    
     /*
      * Now when we want to remove a todo , don't just remove from json we also have to remove from todos list 
      */
@@ -79,9 +95,9 @@ else
         try
         {
             
-            Todo todoToRemove = todos.First(todo => todo.Id == id);
+            Todo todoToRemove = allTodos.First(todo => todo.Id == id);
             await TodoHome.DeleteAsync(id);
-            todos.Remove(todoToRemove);
+            allTodos.Remove(todoToRemove);
         }
         catch (Exception e)
         {
@@ -106,4 +122,72 @@ else
             errorLabel = e.Message;
         }
     }
+    
+    /*
+     * Show or Hide filter part 
+     */
+
+    private void OpenCloseFilters()
+    {
+        doShowFilters = !doShowFilters;
+        if (!doShowFilters)
+        {
+            ownerIdFilter = null;
+            isComepletedFilter = null;
+            todosToShow = allTodos;
+        }
+    }
+
+    private void UpdateOwnerFilter(ChangeEventArgs args)
+    {
+        string value = (string) args.Value;
+        
+        if (string.IsNullOrEmpty(value))
+        {
+            ownerIdFilter = null;
+            ApplyFilters();
+            return;
+        }
+        
+        int idFilter = int.Parse(value);
+        
+        if (idFilter<0)
+        {
+            return;
+        }
+
+        ownerIdFilter = idFilter;
+        ApplyFilters();
+    }
+
+    private void UpdateCompletedStatusFilter(ChangeEventArgs args)
+    {
+        string value = (string) args.Value;
+
+        try
+        {
+            isComepletedFilter = bool.Parse(value);
+        }
+        catch (Exception e)
+        {
+            isComepletedFilter = null;
+        }
+        ApplyFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        todosToShow = allTodos;
+        
+        if (isComepletedFilter != null)
+        {
+            todosToShow = todosToShow.Where(todo => todo.IsCompleted == isComepletedFilter).ToList();
+        }
+
+        if (ownerIdFilter != null)
+        {
+            todosToShow = todosToShow.Where(todo => todo.OwnerId == ownerIdFilter).ToList();
+        }
+    }
+    
 }
