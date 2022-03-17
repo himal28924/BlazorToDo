@@ -34,7 +34,10 @@
         </p>
        
     </EditForm>
-    <label>@errorLabel</label>
+     @if (!string.IsNullOrEmpty(errorLabel))
+   {
+       <label>@errorLabel</label>
+   }
 </div>
 @code {
     private Todo newTodoItem = new Todo();
