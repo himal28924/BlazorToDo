@@ -33,27 +33,52 @@ else
                 <td>@item.OwnerId</td>
                 <td>@item.Id</td>
                 <td>@item.Title</td>
-                <td>@item.IsCompleted</td>
-                
+                <td>
+                    <label class="switch">
+                        <input type="checkbox"
+                               checked=@item.IsCompleted
+                               @onchange="@(arg=> ToggleStatus((bool)arg.Value,item))"/>
+                        <span class="slider round"></span>
+                    </label>
+                </td>
+                <td>
+                    <label onclick="@(() => RemoveTodo(item.Id))" style="cursor:pointer; color: red; font-weight: bold">
+                        &#x2717;
+                    </label>
+                </td> 
             </tr>
         }
-        </tbody>
+        </tbody> 
     </table>
+}
+
+@if (!string.IsNullOrEmpty(errorLabel))
+{
+    
+    <label style="color: red">@errorLabel</label>
 }
 @code {
     private ICollection<Todo> todos;
     private string errorLabel;
 
+    
+    /*
+     * First thing is to Intialize everything get from JSON FIle
+     */
     protected override async Task OnInitializedAsync()
     {
         todos = await TodoHome.GetAsync();
     }
 
+    /*
+     * Now when we want to remove a todo , don't just remove from json we also have to remove from todos list 
+     */
     private async Task RemoveTodo(int id)
     {
         errorLabel = "";
         try
         {
+            
             Todo todoToRemove = todos.First(todo => todo.Id == id);
             await TodoHome.DeleteAsync(id);
             todos.Remove(todoToRemove);
@@ -62,6 +87,23 @@ else
         {
             errorLabel = e.Message;
            
+        }
+    }
+
+    /*
+     * Now we want to change the status.
+     */
+    private async Task ToggleStatus(bool status,Todo todo)
+    {
+        errorLabel = "";
+        todo.IsCompleted = status;
+        try
+        {
+            await TodoHome.UpdateAsync(todo);
+        }
+        catch(Exception e)
+        {
+            errorLabel = e.Message;
         }
     }
 }
