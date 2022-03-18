@@ -80,7 +80,7 @@ else
                 </td>
                 
                 <td>
-                    <img src="img/edit.gif" class="funnel" onclick="@(() => Edit(item.Id))"/>
+                    <img src="img/edit.gif" class="funnel" @onclick="@(() => ShowEdit(item))"/>
                 </td>
                 
                 <td>
@@ -98,6 +98,45 @@ else
     <label style="color: red">@errorLabel</label>
 }
 
+@if (showModal)
+{
+    <Modal>
+        <h3>Edit Category</h3>
+        <hr/>
+        <div style="margin-bottom: 5px" >
+            <label style="font-weight: bold">
+                Todo Title
+            </label>
+        </div>
+        <div style="margin-bottom: 5px">
+            <textarea style="width: 20ch; border-radius: 10px; padding: 3px;" @bind="@editedTitle"/>
+        </div>
+        
+        <div style="margin: 5px">
+            <label style="font-weight:bold">
+                Owner 
+            </label>
+        </div>
+        <div style="margin: 5px">
+            <input type="number" min="0" style="width: 10ch; border-radius: 10px; padding: 3px; text-align: center"  @bind="@editedOwner"  />
+        </div>
+        
+        @if (!string.IsNullOrEmpty(editErrorLabel))
+                {
+                    <div>
+                        <label style="color:red">@editErrorLabel</label>
+                    </div>
+                }
+        
+        <div style="margin-top: 15px">
+            <button style="margin-right: 10px" @onclick="AcceptEdit">Accept</button>
+            <button style="margin: 10px" @onclick="@(() => showModal = false)">Cancel</button>
+        </div>
+        
+        
+    </Modal>
+}
+
 
 @code {
 
@@ -107,7 +146,53 @@ else
     private int? ownerIdFilter;
     private bool? isCompletedFilter;
     private bool doShowFilters;
+    private bool showModal;
+    
+    
+    
+    
+    private string editedTitle = String.Empty;
+    private int editedOwner;
+    private Todo todoToEdit = new();
+    private string editErrorLabel = string.Empty;
 
+    private void ShowEdit(Todo todo)
+    {
+        todoToEdit = todo;
+        editedOwner = todo.OwnerId;
+        editedTitle = todo.Title;
+        showModal = true;
+    }
+
+    private async Task AcceptEdit()
+    {
+        try
+        {
+            Todo updated = new()
+            {
+                Id = todoToEdit.Id,
+                IsCompleted = todoToEdit.IsCompleted,
+                OwnerId = editedOwner,
+                Title = editedTitle
+            };
+            await TodoHome.UpdateAsync(updated);
+            todoToEdit.Title = updated.Title;
+            todoToEdit.OwnerId = updated.OwnerId;
+            showModal = false;
+        }
+        
+        catch (Exception e)
+        {
+            editErrorLabel = e.Message;
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
     protected override async Task OnInitializedAsync()
     {
         allTodos = await TodoHome.GetAsync();
