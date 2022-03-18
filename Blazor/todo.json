@@ -9,13 +9,13 @@
     "Id": 11,
     "Title": "Status",
     "OwnerId": 6,
-    "IsCompleted": false
+    "IsCompleted": true
   },
   {
     "Id": 12,
     "Title": "Components",
     "OwnerId": 6,
-    "IsCompleted": false
+    "IsCompleted": true
   },
   {
     "Id": 13,
