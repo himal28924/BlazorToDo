@@ -1,76 +1,71 @@
 @page "/Todos"
-@using Domain.Contracts
 @using Domain.Model
-@inject ITodoHome TodoHome;
+@using Domain.Contracts
+@inject ITodoHome TodoHome
+
 <h3>Todos</h3>
 
 <div class="filterbar">
     <div class="filterscontainer">
-        
-        @*I have to understand this *@
-        
-        <img src="img/@(doShowFilters ? "clear_" : "")funnel.png"
-             class="funnel"
-             @onclick="OpenCloseFilters"/>
-
+        <img src="img/@(doShowFilters?"clear_" : "")funnel.png" class="funnel" @onclick="OpenCloseFilters"/>
         @if (doShowFilters)
         {
             <div class="filter">
                 <div>
-                    <label> Owner Id</label>
+                    <label>Owner ID:</label>
                 </div>
-            
                 <div>
-                    <input type="number"
-                           class="owneridfield"
-                           @oninput="args => UpdateOwnerFilter(args) "
-                           min="0"/>
+                    <input type="number" class="owneridfield" @oninput="args => UpdateOwnerFilter(args)" min="0"/>
                 </div>
             </div>
-            
             <div class="filter">
                 <div>
-                    <label style="text-align:center">Is Completed? </label>
+                    <label style="text-align: center">Is completed?</label>
                 </div>
                 <div>
-                    <select class="completestatusfield"
-                            @onchange="args => UpdateCompletedStatusFilter(args)">
+                    <select class="completedstatusfield" @onchange="args => UpdateCompletedStatusFilter(args)">
                         <option value="all">all</option>
                         <option value="true">true</option>
                         <option value="false">false</option>
                     </select>
                 </div>
             </div>
-            
         }
     </div>
-
 </div>
 
 @if (allTodos == null)
 {
-    <p> <em> Loading...</em></p>
+    <p>
+        <em>Loading...</em>
+    </p>
 }
 else if (!allTodos.Any())
 {
-    <p><em>
-        No Item , please add some todo.
-    </em></p>
+    <p>
+        <em>No ToDo items exist. Please add some.</em>
+    </p>
+}
+else if (!todosToShow.Any())
+{
+    <p>
+        <em>No todos matching your search criteria</em>
+    </p>
 }
 else
 {
     <table class="table">
         <thead>
         <tr>
-            <th>Owner Id </th>
-            <th>Todo ID</th> 
-            <th>Title</th> 
+            <th>Owner ID</th>
+            <th>Todo ID</th>
+            <th>Title</th>
             <th>Completed?</th>
             <th>Remove</th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var item in allTodos)
+        @foreach (var item in todosToShow)
         {
             <tr>
                 <td>@item.OwnerId</td>
@@ -78,61 +73,46 @@ else
                 <td>@item.Title</td>
                 <td>
                     <label class="switch">
-                        <input type="checkbox"
-                               checked=@item.IsCompleted
-                               @onchange="@(arg=> ToggleStatus((bool)arg.Value,item))"/>
+                        <input type="checkbox" checked=@item.IsCompleted @onchange="@((arg) => ToggleStatus((bool)arg.Value, item))">
                         <span class="slider round"></span>
                     </label>
                 </td>
                 <td>
-                    <label onclick="@(() => RemoveTodo(item.Id))" style="cursor:pointer; color: red; font-weight: bold">
+                    <label @onclick="@(() => RemoveTodo(item.Id))" style="cursor:pointer; color: red; font-weight: bold">
                         &#x2717;
                     </label>
-                </td> 
+                </td>
             </tr>
         }
-        </tbody> 
+        </tbody>
     </table>
 }
-
 @if (!string.IsNullOrEmpty(errorLabel))
 {
-    
     <label style="color: red">@errorLabel</label>
 }
+
+
 @code {
+
     private ICollection<Todo> allTodos, todosToShow;
     private string errorLabel;
 
-    
-    /*
-     * For MAKINng and Filter Todo
-     */
-
-
     private int? ownerIdFilter;
-    private bool? isComepletedFilter;
+    private bool? isCompletedFilter;
     private bool doShowFilters;
-    
-    /*
-     * First thing is to Intialize everything get from JSON FIle
-     */
+
     protected override async Task OnInitializedAsync()
     {
         allTodos = await TodoHome.GetAsync();
         todosToShow = allTodos;
     }
 
-    
-    /*
-     * Now when we want to remove a todo , don't just remove from json we also have to remove from todos list 
-     */
     private async Task RemoveTodo(int id)
     {
         errorLabel = "";
         try
         {
-            
             Todo todoToRemove = allTodos.First(todo => todo.Id == id);
             await TodoHome.DeleteAsync(id);
             allTodos.Remove(todoToRemove);
@@ -140,14 +120,10 @@ else
         catch (Exception e)
         {
             errorLabel = e.Message;
-           
         }
     }
 
-    /*
-     * Now we want to change the status.
-     */
-    private async Task ToggleStatus(bool status,Todo todo)
+    private async Task ToggleStatus(bool status, Todo todo)
     {
         errorLabel = "";
         todo.IsCompleted = status;
@@ -155,15 +131,11 @@ else
         {
             await TodoHome.UpdateAsync(todo);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             errorLabel = e.Message;
         }
     }
-    
-    /*
-     * Show or Hide filter part 
-     */
 
     private void OpenCloseFilters()
     {
@@ -171,44 +143,41 @@ else
         if (!doShowFilters)
         {
             ownerIdFilter = null;
-            isComepletedFilter = null;
+            isCompletedFilter = null;
             todosToShow = allTodos;
         }
     }
 
     private void UpdateOwnerFilter(ChangeEventArgs args)
     {
-        string value = (string) args.Value;
-        
+        string value = (string)args.Value;
         if (string.IsNullOrEmpty(value))
         {
             ownerIdFilter = null;
             ApplyFilters();
             return;
         }
-        
         int idFilter = int.Parse(value);
-        
-        if (idFilter<0)
+        if (idFilter < 0)
         {
             return;
         }
-
+        
         ownerIdFilter = idFilter;
         ApplyFilters();
     }
 
     private void UpdateCompletedStatusFilter(ChangeEventArgs args)
     {
-        string value = (string) args.Value;
+        string value = (string)args.Value;
 
         try
         {
-            isComepletedFilter = bool.Parse(value);
+            isCompletedFilter = bool.Parse(value);
         }
         catch (Exception e)
         {
-            isComepletedFilter = null;
+            isCompletedFilter = null;
         }
         ApplyFilters();
     }
@@ -216,16 +185,13 @@ else
     private void ApplyFilters()
     {
         todosToShow = allTodos;
-        
-        if (isComepletedFilter != null)
+        if (isCompletedFilter != null)
         {
-            todosToShow = todosToShow.Where(todo => todo.IsCompleted == isComepletedFilter).ToList();
+            todosToShow = todosToShow.Where(todo => todo.IsCompleted == isCompletedFilter).ToList();
         }
-
         if (ownerIdFilter != null)
         {
             todosToShow = todosToShow.Where(todo => todo.OwnerId == ownerIdFilter).ToList();
         }
     }
-    
 }
