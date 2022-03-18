@@ -1,0 +1,83 @@
+@page "/EditTodo/{Id:int}"
+
+@using Domain.Contracts
+@using Domain.Model
+
+
+@inject ITodoHome todoHome;
+@inject NavigationManager navMgr;
+
+<div class="box">
+    <h3>EditTodo</h3>
+    
+    <EditForm Model="@todoToEdit" OnValidSubmit="@Save">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+        
+        <div class="form-group field">
+            <span>
+                <label> User Id : </label>
+            </span>
+            <spann>
+                <InputNumber @bind-Value="todoToEdit.OwnerId"></InputNumber>
+            </spann>
+        </div>
+        
+        <div class="form-group field">
+            <span>
+                <label>
+                    Title : 
+                </label>
+            </span>
+            <span>
+                <InputTextArea rows="4" @bind-Value="todoToEdit.Title"/>
+            </span>
+        </div>
+        
+        <p class="actions">
+            <button class="acceptbtn" type="submit">Update</button>
+        </p>
+
+    </EditForm>
+    
+    @if (!string.IsNullOrEmpty(errorLabel))
+    {
+        <label>@errorLabel</label>
+    }
+</div>
+
+
+
+@*
+Coding part
+*@
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Todo todoToEdit;
+    private string errorLabel = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        todoToEdit = await todoHome.GetById(Id);
+    }
+
+    private async Task Save()
+    {
+        errorLabel = "";
+        try
+        {
+            await todoHome.UpdateAsync(todoToEdit);
+            navMgr.NavigateTo("/Todos");
+        }
+        catch (Exception e)
+        {
+            errorLabel = e.Message;
+        }
+    }
+
+
+
+}

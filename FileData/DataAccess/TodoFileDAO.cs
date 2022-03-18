@@ -33,18 +33,21 @@ public class TodoFileDAO: ITodoHome
         return todo;
     }
 
-    public async Task DeleteAsync(int id)
+    public  Task DeleteAsync(int id)
     {
         Todo toDelete = fileContext.Todos.First(t => t.Id == id);
         fileContext.Todos.Remove(toDelete);
         fileContext.SaveChanges();
+        return Task.CompletedTask;
     }
 
-    public async Task UpdateAsync(Todo todo)
+    public  Task UpdateAsync(Todo todo)
     {
         Todo toUpdate = fileContext.Todos.First(t => t.Id == todo.Id);
         toUpdate.IsCompleted = todo.IsCompleted;
         toUpdate.OwnerId = todo.OwnerId;
+        toUpdate.Title = todo.Title;
         fileContext.SaveChanges();
+        return Task.CompletedTask;
     }
 }
