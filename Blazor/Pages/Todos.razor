@@ -172,7 +172,7 @@ else
             {
                 Id = todoToEdit.Id,
                 IsCompleted = todoToEdit.IsCompleted,
-                OwnerId = editedOwner,
+                OwnerId = editedOwner ,
                 Title = editedTitle
             };
             await TodoHome.UpdateAsync(updated);

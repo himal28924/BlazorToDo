@@ -33,7 +33,6 @@ public class FileContext
 
     public void SaveChanges()
     {
-        
         var options = new JsonSerializerOptions { WriteIndented = true };
         string serialize = JsonSerializer.Serialize(Todos,options);
         File.WriteAllText(todoFilePath,serialize);
