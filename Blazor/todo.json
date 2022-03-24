@@ -32,7 +32,7 @@
   {
     "Id": 15,
     "Title": "Update todo Popup works",
-    "OwnerId": 37,
+    "OwnerId": 36,
     "IsCompleted": true
   },
   {
@@ -46,11 +46,5 @@
     "Title": "retry thepop up",
     "OwnerId": 6,
     "IsCompleted": true
-  },
-  {
-    "Id": 18,
-    "Title": "Confusion in Todo pop up really",
-    "OwnerId": 38,
-    "IsCompleted": false
   }
 ]
