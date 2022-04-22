@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
 using Domain.Contracts;
-using FileData.DataAccess;
+
+using HttpServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +13,8 @@ builder.Services.AddServerSideBlazor();
 
 
 //THis part will get the TODOFILEDAO , if in future we need different File , we just need to change this
-builder.Services.AddScoped<FileContext>();
-builder.Services.AddScoped<ITodoHome, TodoFileDAO>();
+
+builder.Services.AddScoped<ITodoHome, TodoHttpClient>();
 
 
 var app = builder.Build();
